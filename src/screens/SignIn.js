@@ -33,6 +33,7 @@ const SignIn = () => {
     try {
       const { user } = await logInWithEmail(email, password)
       await userStateChange(setCurrentUser)
+      navigate('/')
     } catch (error) {
       console.log(error)
       setInputFields(defaultInputFields)

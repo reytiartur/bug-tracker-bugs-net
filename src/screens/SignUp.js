@@ -36,6 +36,7 @@ const SignUp = () => {
       const { user } = await createUserWithEmail(email, password)
       await createUserData(user, { userName })
       await userStateChange(setCurrentUser)
+      navigate('/')
     } catch (error) {
       console.log(error)
       setInputFields(defaultInputFields)
