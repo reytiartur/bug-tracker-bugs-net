@@ -77,7 +77,35 @@ export const logOut = async () => {
 }
 
 export const userStateChange = async (setCurrentUser) => {
-    await onAuthStateChanged(auth, (user) => {
-        setCurrentUser(user)
+    await onAuthStateChanged(auth, async (currentUser) => {
+        if(!currentUser) {
+            setCurrentUser(null);
+            return;
+        } else {
+            const storeUser = {};
+            const userProperties = [
+                'displayName',
+                'email',
+                'emailVerified',
+                'isAnonymous',
+                'photoURL',
+                'providerData',
+                'providerId',
+                'refreshToken',
+                'uid',
+            ];
+
+            userProperties.map((prop) => {
+                if (prop in currentUser) {
+                    storeUser[prop] = currentUser[prop];
+                }
+            });
+
+            const userRef = await doc(db, 'users', currentUser?.uid);
+            const userSnapshot = await getDoc(userRef);
+            storeUser['userName'] = userSnapshot.data().userName;
+            
+            setCurrentUser(storeUser)
+        }
     })
 }
