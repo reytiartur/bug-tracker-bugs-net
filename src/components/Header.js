@@ -5,7 +5,7 @@ import Search from './Search'
 
 const Header = () => {
   return (
-    <div className='flex relative'>
+    <div className='flex relative grow-0 shrink-0 basis-1/6'>
         <ProfileInfo />
         <Search />
         <Filter />
