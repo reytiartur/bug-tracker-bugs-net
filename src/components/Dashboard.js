@@ -91,7 +91,7 @@ const Dashboard = () => {
     }
 
     return (
-        <div className='relative grid grid-cols-4 gap-6 px-6 grow-0 shrink-0 basis-5/6 overflow-y-scroll'>
+        <div className='relative grid grid-cols-4 gap-6 2xl:gap-10 px-6 2xl:px-14 grow-0 shrink-0 basis-5/6 overflow-hidden'>
             <DndContext sensors={sensors} collisionDetection={rectIntersection} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragCancel={handleDragCancel} onDragEnd={handleDragEnd}>
                     <TasksColumn key='to do' title='to do' id='todo' tasks={tasks.todo} />
                     <TasksColumn key='in progress' title='in progress' id='inProgress' tasks={tasks.inProgress} />

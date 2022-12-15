@@ -14,9 +14,9 @@ const TasksColumn = ({ title, id, tasks }) => {
         <div className="h-3 w-full border-b-2 border-grayDark" />
 
         <SortableContext items={tasks} id={id} strategy={verticalListSortingStrategy}>
-            <div ref={setNodeRef} className='min-h-full'>  
+            <div ref={setNodeRef} className='min-h-full overflow-y-auto'>  
                {tasks.map(task => (
-                    <Draggable key={task.name} id={task.id} task={task} />
+                  <Draggable key={task.name} id={task.id} task={task} title={title} container={id} />
                 ))} 
             </div>            
         </SortableContext>  

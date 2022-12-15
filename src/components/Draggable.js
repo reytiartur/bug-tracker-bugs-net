@@ -3,7 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from "@dnd-kit/utilities";
 import TaskCard from './TaskCard';
 
-const Draggable = ({ id, task }) => {
+const Draggable = ({ id, task, title, container }) => {
     const { setNodeRef, transform, transition, isDragging } = useSortable({id});
 
     const style = {
@@ -14,7 +14,7 @@ const Draggable = ({ id, task }) => {
 
   return (
     <div ref={setNodeRef} style={style}>
-        <TaskCard id={id} task={task} />
+        <TaskCard id={id} task={task} title={title} container={container} />
     </div>
   )
 }
