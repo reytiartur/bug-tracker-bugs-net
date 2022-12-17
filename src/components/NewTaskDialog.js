@@ -30,10 +30,10 @@ const NewTaskDialog = ({ id, isTaskOpen, setIsTaskOpen, title, ...props }) => {
         setIsTaskOpen(false)
     }
 
-    const handleSubmit = (e, container) => {
+    const handleCreateTask = (e, container) => {
         e.preventDefault()
         const {name, deadline, description, tag } = inputs
-        const id = new Date.now();
+        const id = Date.now();
         const time = new Date().toLocaleDateString()
         const author = currentUser.userName;
 
@@ -54,11 +54,26 @@ const NewTaskDialog = ({ id, isTaskOpen, setIsTaskOpen, title, ...props }) => {
     const handleChange = (e) => {
         const {id, value} = e.target
         setInputs({...inputs, [id]: value})
-    } 
+    }
 
     useEffect(() => {
         setInputs(props.task ? props.task : defaultInputs)
     }, [isTaskOpen])
+
+    const handleEditTask = (e, container) => {
+        e.preventDefault()
+
+        setTasks((prevTasks) => {
+            const task = prevTasks[container].filter(task => task.id === props.task.id)[0]
+            const index = prevTasks[container].indexOf(task)
+            const { name, deadline, description, tag } = inputs
+            const newTask = {name, deadline, description, tag, author: task.author, id:task.id, time: task.time}
+            return {...prevTasks, [container]: [...prevTasks[container].slice(0, index), newTask, ...prevTasks[container].slice(index + 1)]}
+        })
+
+        closeTaskModal()
+    }
+
 
   return (
     <Fragment>
@@ -75,27 +90,27 @@ const NewTaskDialog = ({ id, isTaskOpen, setIsTaskOpen, title, ...props }) => {
             <Dialog as="div" className="fixed inset-0 bg-black/50 flex justify-center items z-20" onClose={closeTaskModal}>
                 <Dialog.Panel className="w-[400px] absolute transform left-1/2 -translate-x-1/2 top-1/3 bg-background rounded-lg shadow-lg ring-1 border border-black ring-black ring-opacity-5 p-3">
                     <Dialog.Title className="text-center font-medium text-lg capitalize">Adding task to "{title.toUpperCase()}"</Dialog.Title>
-                    <form onSubmit={(e) => handleSubmit(e, id)} className='flex flex-col px-3 my-2'>
+                    <form onSubmit={props.task ? (e) => handleEditTask(e, id) : (e) => handleCreateTask(e, id)} className='flex flex-col px-3 my-2'>
                         {title !== 'backlog' && tasks.backlog.length ? <BacklogDropdown /> : null}
-                        <Input label='Task Name' type='text' id='name' autoComplete='off' value={inputs.name} onChange={() => handleChange()}  />
+                        <Input label='Task Name' type='text' id='name' autoComplete='off' value={inputs.name} onChange={(e) => handleChange(e)} required  />
 
                         <label htmlFor="description" className='text-lg pl-1 font-medium'>Task Description</label>
-                        <textarea id='description' rows='3' className='mb-1 resize-none bg-background rounded-md px-2 py-1 border-2 border-grayDark' value={inputs.description} onChange={() => handleChange()} />
+                        <textarea id='description' rows='3' className='mb-1 resize-none bg-background rounded-md px-2 py-1 border-2 border-grayDark' value={inputs.description} onChange={(e) => handleChange(e)} />
 
-                        <Input label='Deadline' type='date' id='deadline' value={inputs.deadline} onChange={() => handleChange()} />
+                        <Input label='Deadline' type='date' id='deadline' value={inputs.deadline} onChange={(e) => handleChange(e)} required />
 
                         <div className="flex justify-between items-center px-1">
                             <label htmlFor="tag" className='text-lg pl-1 font-medium '>#Tag</label>
                             <Button btnStyle='default' btnSize='minimal' type='button' onClick={openInputModal}>New Tag</Button>
                         </div>
                         
-                        <select id="tag" className='mb-6 bg-background rounded-md px-2 py-1 border-2 border-grayDark' onChange={() => handleChange()}>
+                        <select id="tag" className='mb-6 bg-background rounded-md px-2 py-1 border-2 border-grayDark' defaultValue={tags[0]?.tag} onChange={(e) => handleChange(e)} required>
                             {tags.map(value => (
-                                <option key={value.tag + value.color} style={{color: value.color}} value={value.tag} selected={inputs?.tag}>{value.tag}</option>
+                                <option key={value.tag + value.color} style={{color: value.color}}>{value.tag}</option>
                             ))}
                         </select>
 
-                        <Button btnStyle='black' btnSize='full' type='submit'>Create Task</Button>
+                        <Button btnStyle='black' btnSize='full' type='submit'>{props?.task ? 'Save' : 'Create Task'}</Button>
                     </form>
                 </Dialog.Panel>
             </Dialog>

@@ -1,26 +1,41 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import { ArrowsPointingOutIcon, PencilIcon } from '@heroicons/react/24/outline';
-import { ChatBubbleLeftIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { ChatBubbleLeftIcon } from '@heroicons/react/24/solid';
 import { useSortable } from '@dnd-kit/sortable';
-import { Dialog, Transition } from '@headlessui/react';
+import { Transition, Popover } from '@headlessui/react';
 import NewTaskDialog from './NewTaskDialog';
+import Input from './Input';
+import Button from './Button';
+import { TasksContext } from '../context/tasksContext';
+import { UserContext } from '../context/userContext';
 
 const TaskCard = ({ id, task, title, container }) => {
     const { attributes, listeners, setActivatorNodeRef, isDragging } = useSortable({id});
     const [deadline, setDeadline] = useState()
     const [color, setColor] = useState()
     const [time, setTime] = useState()
-    const [isOpen, setIsOpen] = useState(false)
     const [isTaskOpen, setIsTaskOpen] = useState(false)
-
+    const [comment, setComment] = useState('')
+    const { setTasks } = useContext(TasksContext)
+    const { currentUser } = useContext(UserContext)
+    
     const openTaskModal = () => {
         setIsTaskOpen(true)
     }
 
     const style = {cursor: isDragging ? 'grabbing' : 'grab'}
 
-    const handleEdit = (task) => {
+    const handleComment = () => {
 
+        setTasks((prevTasks) => {
+            const currentTask = prevTasks[container].filter(item => item.id === task.id)[0]
+            const index = prevTasks[container].indexOf(currentTask)
+            const newTask = {...task, comments:[...task.comments, { author:currentUser.userName, text:comment, img:currentUser.imgUrl}]}
+
+            return {...prevTasks, [container]:[...prevTasks[container].slice(0, index), newTask, ...prevTasks[container].slice(index + 1)]}
+        })
+
+        setComment('')
     }
 
     const handleDeadline = () => {
@@ -33,10 +48,10 @@ const TaskCard = ({ id, task, title, container }) => {
             setColor('');
         } else if(date === 0) {
             setDeadline('today')
-            setColor('text-orange-400')
+            setColor('text-yellow-400')
         } else if(date < -1) {
             setDeadline(task.deadline)
-            setColor('');
+            setColor('text-red-500');
         } else if(date <= 0) {
             setDeadline('yesterday')
             setColor('text-red-500');
@@ -64,8 +79,6 @@ const TaskCard = ({ id, task, title, container }) => {
         handleTimeAgo()
     }, [])
 
-    console.log(task)
-
 
     return (
         <Fragment>
@@ -85,44 +98,40 @@ const TaskCard = ({ id, task, title, container }) => {
                 <p className="mt-1 text-sm">{task.description}</p>
                 <div className="flex justify-between items-center">
                     <p className="text-sm">#{task.tag}</p>
-                    <ChatBubbleLeftIcon className='w-5 h-5 ml-auto cursor-pointer text-grayLight' onClick={() => setIsOpen(true)} />
-                    <p className="pl-2 text-medium font-medium">{task.comments.length ? task.comments.length : null}</p>
-                </div>
-            </div>
-
-            <Transition as={Fragment}
-                enter="transition ease-out duration-200"
-                enterFrom="opacity-0 translate-y-1"
-                enterTo="opacity-100 translate-y-0"
-                leave="transition ease-in duration-150"
-                leaveFrom="opacity-100 translate-y-0"
-                leaveTo="opacity-0 translate-y-1" 
-                appear 
-                show={isOpen} 
-            >           
-                <Dialog as="div" className="fixed inset-0 bg-black/50 flex justify-center items z-20" open={isOpen} onClose={() => setIsOpen(false)}>
-                    <Dialog.Panel className="w-[400px] h-[400px] absolute transform left-1/2 -translate-x-1/2 top-1/3 bg-background rounded-lg shadow-lg ring-1 border border-black ring-black ring-opacity-5 p-3">
-                        <Dialog.Title className="text-center font-medium text-lg flex items-center justify-between px-2">
-                            <p className="">Comments </p>
-                            <XMarkIcon className='w-5 h-5 text-black hover:text-red-600' onClick={() => setIsOpen(false)} />
-                        </Dialog.Title>
-                        <Dialog.Description className='mt-3'>
-                            {task.comments.map(comment => {
-                                <div className="">
-                                    <div className="">
-                                        <img src={comment.img} alt="avatar" className='rounded-full w-4 h-4' />
-                                        <p className="">{comment.author}</p>
-                                        <p className="">{comment.text}</p>
-                                    </div>
-                                    <p className="">
-
-                                    </p>
+                    <p className="ml-auto pr-2 text-medium font-medium">{task.comments?.length ? task.comments.length : null}</p>
+                    <Popover className="flex self-center z-20">
+                        <Popover.Button><ChatBubbleLeftIcon className='w-5 h-5 cursor-pointer text-grayLight ui-open:text-primary' /></Popover.Button>
+                        <Transition
+                        enter="transition ease-out duration-200"
+                        enterFrom="opacity-0 translate-y-1"
+                        enterTo="opacity-100 translate-y-0"
+                        leave="transition ease-in duration-150"
+                        leaveFrom="opacity-100 translate-y-0"
+                        leaveTo="opacity-0 translate-y-1" 
+                        appear 
+                        >   
+                            <Popover.Panel className="w-[400px] h-[400px] flex flex-col absolute transform left-1/2 -translate-x-1/2 top-1/3 bg-background rounded-lg shadow-lg ring-1 border border-black ring-black ring-opacity-5 p-3">
+                                <p className="text-center font-medium text-lg px-2">Comments </p>
+                                <div className='mt-3'>
+                                    {task.comments.map(comment => (
+                                        <div key={comment.text + comment.author} className="px-3 flex items-center gap-3 my-2">
+                                            <img src={comment.img} className='rounded-full w-8 h-8' />
+                                            <div className="flex flex-col">
+                                                <p className="text-primaryDark font-medium">{comment.author}</p>
+                                                <p className="text-sm">{comment.text}</p>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            })}
-                        </Dialog.Description>
-                    </Dialog.Panel>
-                </Dialog>
-            </Transition>
+                                <div className="flex h-10 mt-auto mb-2 gap-2">
+                                    <Input type='text' placeholder="Add comment" value={comment} onChange={(e) => setComment(e.target.value)} />
+                                    <Button btnSize='minimal' btnStyle='black' onClick={() => handleComment()}>Send</Button>
+                                </div>
+                            </Popover.Panel>
+                        </Transition>
+                    </Popover>
+                </div>
+            </div>            
 
             <NewTaskDialog id={container} isTaskOpen={isTaskOpen} setIsTaskOpen={setIsTaskOpen} title={title} task={task} />
         </Fragment>
