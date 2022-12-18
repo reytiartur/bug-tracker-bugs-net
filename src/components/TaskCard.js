@@ -97,7 +97,7 @@ const TaskCard = ({ id, task, title, container }) => {
                 <p className="text-sm text-grayDark">{task.author}, {time}</p>
                 <p className="mt-1 text-sm">{task.description}</p>
                 <div className="flex justify-between items-center">
-                    <p className="text-sm">#{task.tag}</p>
+                    <p className="text-sm" style={{color: `${task.tag.color}`}}>#{task.tag.tag}</p>
                     <p className="ml-auto pr-2 text-medium font-medium">{task.comments?.length ? task.comments.length : null}</p>
                     <Popover className="flex self-center z-20">
                         <Popover.Button><ChatBubbleLeftIcon className='w-5 h-5 cursor-pointer text-grayLight ui-open:text-primary' /></Popover.Button>

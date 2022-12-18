@@ -8,13 +8,14 @@ import { TasksContext } from '../context/tasksContext';
 import Button from './Button';
 import BacklogDropdown from './BacklogDropdown';
 
-const NewTaskDialog = ({ id, isTaskOpen, setIsTaskOpen, title, ...props }) => {
-    const defaultInputs = {name: '', deadline: '', description: '', tag: ''}
+const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }) => {
+    const defaultInputs = {name: '', deadline: '', description: '', tag: { tag: '', color: ''}}
     const { tasks, setTasks, tags, setTags } = useContext(TasksContext)
     const [color, setColor] = useState('fff');
     const { currentUser } = useContext(UserContext)
     const [isInputOpen, setIsInputOpen] = useState(false)
     const [inputs, setInputs] = useState(defaultInputs)
+    const [task, setTask] = useState(props?.task)
     
         
     const openInputModal = () => {
@@ -30,15 +31,18 @@ const NewTaskDialog = ({ id, isTaskOpen, setIsTaskOpen, title, ...props }) => {
         setIsTaskOpen(false)
     }
 
-    const handleCreateTask = (e, container) => {
+    const handleCreateTask = (e) => {
         e.preventDefault()
-        const {name, deadline, description, tag } = inputs
+
+        const { name, deadline, description, tag } = inputs
         const id = Date.now();
         const time = new Date().toLocaleDateString()
         const author = currentUser.userName;
 
+    console.log(container)
+
         setTasks((prevTasks) => 
-            ({...prevTasks, [container]: [...prevTasks[container], {name, description, id, author, time, deadline, comments:[], tag}]
+            ({...prevTasks, [container]: [...prevTasks[container], {name, description, id, author, time, deadline, comments:[], tag: tag}]
         }))
 
         closeTaskModal()
@@ -47,7 +51,9 @@ const NewTaskDialog = ({ id, isTaskOpen, setIsTaskOpen, title, ...props }) => {
     const handleNewTag = (e) => {
         e.preventDefault()
         const { tag } = e.target.elements
+        setInputs((prevState) => ({...prevState, tag: {tag: tag.value, color: color}}))
         setTags((prevState) => ([{tag: tag.value, color: color}, ...prevState]))
+        setColor('fff')
         closeInputModal()
     }
 
@@ -57,23 +63,28 @@ const NewTaskDialog = ({ id, isTaskOpen, setIsTaskOpen, title, ...props }) => {
     }
 
     useEffect(() => {
-        setInputs(props.task ? props.task : defaultInputs)
-    }, [isTaskOpen])
+        setInputs(task ? task : defaultInputs)
+    }, [isTaskOpen, task])
 
-    const handleEditTask = (e, container) => {
+    const handleEditTask = (e) => {
         e.preventDefault()
 
+    console.log(container)
+
         setTasks((prevTasks) => {
-            const task = prevTasks[container].filter(task => task.id === props.task.id)[0]
+            const task = prevTasks[container].filter(task => task.id === task.id)[0]
             const index = prevTasks[container].indexOf(task)
             const { name, deadline, description, tag } = inputs
-            const newTask = {name, deadline, description, tag, author: task.author, id:task.id, time: task.time}
+            const newTask = {name, deadline, description, tag: tag, author: task.author, id:task.id, time: task.time}
             return {...prevTasks, [container]: [...prevTasks[container].slice(0, index), newTask, ...prevTasks[container].slice(index + 1)]}
         })
 
         closeTaskModal()
     }
 
+    useEffect(() => {
+        console.log(task)
+    }, [task])
 
   return (
     <Fragment>
@@ -90,8 +101,8 @@ const NewTaskDialog = ({ id, isTaskOpen, setIsTaskOpen, title, ...props }) => {
             <Dialog as="div" className="fixed inset-0 bg-black/50 flex justify-center items z-20" onClose={closeTaskModal}>
                 <Dialog.Panel className="w-[400px] absolute transform left-1/2 -translate-x-1/2 top-1/3 bg-background rounded-lg shadow-lg ring-1 border border-black ring-black ring-opacity-5 p-3">
                     <Dialog.Title className="text-center font-medium text-lg capitalize">Adding task to "{title?.toUpperCase()}"</Dialog.Title>
-                    <form onSubmit={props.task ? (e) => handleEditTask(e, id) : (e) => handleCreateTask(e, id)} className='flex flex-col px-3 my-2'>
-                        {title !== 'backlog' && tasks.backlog.length ? <BacklogDropdown /> : null}
+                    <form onSubmit={task ? (e) => handleEditTask(e) : (e) => handleCreateTask(e)} className='flex flex-col px-3 my-2'>
+                        {title !== 'backlog' && tasks.backlog.length ? <BacklogDropdown setTask={setTask} /> : null}
                         <Input label='Task Name' type='text' id='name' autoComplete='off' value={inputs.name} onChange={(e) => handleChange(e)} required  />
 
                         <label htmlFor="description" className='text-lg pl-1 font-medium'>Task Description</label>

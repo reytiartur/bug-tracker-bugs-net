@@ -11,7 +11,7 @@ const ColumnHeader = ({ title, id }) => {
   const openTaskModal = () => {
     setIsTaskOpen(true)
   }
-  
+
 
   return (
     <Fragment>
@@ -19,7 +19,7 @@ const ColumnHeader = ({ title, id }) => {
       <p className="text-center font-light mb-2 text-sm text-grayLight">{tasks[id].length} tasks</p>
       <Button btnStyle='black' btnSize='edgy' onClick={openTaskModal}><PlusCircleIcon className='text-primary h-6 w-6 mr-2 group-hover:text-primaryDark'/> Add New</Button>
       
-      <NewTaskDialog id={id} isTaskOpen={isTaskOpen} setIsTaskOpen={setIsTaskOpen} title={title} />
+      <NewTaskDialog container={id} isTaskOpen={isTaskOpen} setIsTaskOpen={setIsTaskOpen} title={title} />
     </Fragment>
   )
 }
