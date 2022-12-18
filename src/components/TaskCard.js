@@ -113,7 +113,7 @@ const TaskCard = ({ id, task, title, container }) => {
                             <Popover.Panel className="w-[400px] h-[400px] flex flex-col absolute transform left-1/2 -translate-x-1/2 top-1/3 bg-background rounded-lg shadow-lg ring-1 border border-black ring-black ring-opacity-5 p-3">
                                 <p className="text-center font-medium text-lg px-2">Comments </p>
                                 <div className='mt-3'>
-                                    {task.comments.map(comment => (
+                                    {task?.comments?.map(comment => (
                                         <div key={comment.text + comment.author} className="px-3 flex items-center gap-3 my-2">
                                             <img src={comment.img} className='rounded-full w-8 h-8' />
                                             <div className="flex flex-col">

@@ -89,7 +89,7 @@ const NewTaskDialog = ({ id, isTaskOpen, setIsTaskOpen, title, ...props }) => {
         >           
             <Dialog as="div" className="fixed inset-0 bg-black/50 flex justify-center items z-20" onClose={closeTaskModal}>
                 <Dialog.Panel className="w-[400px] absolute transform left-1/2 -translate-x-1/2 top-1/3 bg-background rounded-lg shadow-lg ring-1 border border-black ring-black ring-opacity-5 p-3">
-                    <Dialog.Title className="text-center font-medium text-lg capitalize">Adding task to "{title.toUpperCase()}"</Dialog.Title>
+                    <Dialog.Title className="text-center font-medium text-lg capitalize">Adding task to "{title?.toUpperCase()}"</Dialog.Title>
                     <form onSubmit={props.task ? (e) => handleEditTask(e, id) : (e) => handleCreateTask(e, id)} className='flex flex-col px-3 my-2'>
                         {title !== 'backlog' && tasks.backlog.length ? <BacklogDropdown /> : null}
                         <Input label='Task Name' type='text' id='name' autoComplete='off' value={inputs.name} onChange={(e) => handleChange(e)} required  />

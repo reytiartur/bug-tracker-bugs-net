@@ -36,7 +36,7 @@ const Dashboard = () => {
         }
 
         const { containerId: activeContainer } = active.data.current.sortable
-        const overContainer = over.data?.current?.sortable.containerId || over.id
+        const overContainer = over.data?.current?.sortable?.containerId || over.id
         
         if (!activeContainer || !overContainer) return;
 
@@ -93,11 +93,11 @@ const Dashboard = () => {
     return (
         <div className='relative grid grid-cols-4 gap-6 2xl:gap-10 px-6 2xl:px-14 grow-0 shrink-0 basis-5/6 overflow-hidden'>
             <DndContext sensors={sensors} collisionDetection={rectIntersection} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragCancel={handleDragCancel} onDragEnd={handleDragEnd}>
-                    <TasksColumn key='to do' title='to do' id='todo' tasks={tasks.todo} />
-                    <TasksColumn key='in progress' title='in progress' id='inProgress' tasks={tasks.inProgress} />
-                    <TasksColumn key='in review' title='in review' id='inReview' tasks={tasks.inReview} />
-                    <TasksColumn key='done' title='done' id='done' tasks={tasks.done} />
-                    <DragOverlay>{activeId ? <TaskCard id={activeId} task={fullArray.filter(task => task?.id === activeId)[0]} /> : null}</DragOverlay>
+                <TasksColumn key='to do' title='to do' id='todo' tasks={tasks.todo} />
+                <TasksColumn key='in progress' title='in progress' id='inProgress' tasks={tasks.inProgress} />
+                <TasksColumn key='in review' title='in review' id='inReview' tasks={tasks.inReview} />
+                <TasksColumn key='done' title='done' id='done' tasks={tasks.done} />
+                <DragOverlay>{activeId ? <TaskCard id={activeId} task={fullArray.filter(task => task?.id === activeId)[0]} /> : null}</DragOverlay>
             </DndContext>
         </div>
     )
