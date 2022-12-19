@@ -11,7 +11,7 @@ const Sidebar = () => {
     const [selected, setSelected] = useState('projects')
 
   return (
-    <div className='col-start-1 col-end-2 row-span-full flex flex-col px-8 py-6'>
+    <div className='col-start-1 col-end-2 row-span-full flex flex-col px-8 py-6 border-r border-grayLight'>
         <img src="" alt="" className='my-6' />
         <div className="flex flex-col gap-4">
             <ProjectsSelector setSelected={setSelected} selected={selected} />

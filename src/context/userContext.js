@@ -14,9 +14,9 @@ export const UserProvider = ({ children }) => {
 
   const handleResize = () => {
     if (window.innerWidth <= 640) {
-        setIsMobile(true)
+      setIsMobile(true)
     } else {
-        setIsMobile(false)
+      setIsMobile(false)
     }
   }
 
@@ -27,6 +27,17 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     handleResize();
   }, [])
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    setCurrentUser(user);
+  }, []);
+
+  useEffect(() => {
+    if(currentUser) {
+      localStorage.setItem('user', JSON.stringify(currentUser));
+    }
+  }, [currentUser]);
 
   const value = { currentUser, setCurrentUser, isMobile, setIsMobile, handleResize }
 

@@ -1,15 +1,18 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { logOut } from '../utils/firebase'
+import { logOut, userStateChange } from '../utils/firebase'
+import { UserContext } from '../context/userContext'
 
 const SidebarItem = ({icon, category, navigateTo, count, setSelected, selected, props }) => {
     const navigate = useNavigate()
+    const { setCurrentUser } = useContext(UserContext)
 
-    const handleClick = () => {
+    const handleClick = async() => {
         if(category !== 'logout') {
             setSelected(category)
         } else {
-            logOut()
+            await logOut()
+            await userStateChange(setCurrentUser)
         }
         navigate(navigateTo)
     }
