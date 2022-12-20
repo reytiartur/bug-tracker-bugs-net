@@ -1,8 +1,8 @@
 import React, { Fragment, useContext, useState } from 'react'
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import Button from './Button'
-import NewTaskDialog from './NewTaskDialog';
 import { TasksContext } from '../context/tasksContext';
+import BacklogDropdown from './BacklogDropdown';
 
 const ColumnHeader = ({ title, id }) => {
   const [isTaskOpen, setIsTaskOpen] = useState(false)
@@ -19,7 +19,7 @@ const ColumnHeader = ({ title, id }) => {
       <p className="text-center font-light mb-2 text-sm text-grayLight">{tasks[id].length} tasks</p>
       <Button btnStyle='black' btnSize='edgy' onClick={openTaskModal}><PlusCircleIcon className='text-primary h-6 w-6 mr-2 group-hover:text-primaryDark'/> Add New</Button>
       
-      <NewTaskDialog container={id} isTaskOpen={isTaskOpen} setIsTaskOpen={setIsTaskOpen} title={title} />
+      <BacklogDropdown container={id} isTaskOpen={isTaskOpen} setIsTaskOpen={setIsTaskOpen} title={title} />
     </Fragment>
   )
 }

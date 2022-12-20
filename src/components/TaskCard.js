@@ -82,7 +82,11 @@ const TaskCard = ({ id, task, title, container }) => {
 
     return (
         <Fragment>
-            <div className="py-4 px-3 2xl:py-6 border-b-2 border-grayLight flex flex-col gap-1">
+            <div className="py-4 px-3 2xl:py-6 border-b-2 border-grayLight flex flex-col gap-1 h-max">
+                {container === 'backlog' ? 
+                (<div className="flex justify-end">
+                    <p className='rounded-full bg-primaryDark text-xs text-gray-100 px-2 py-1 uppercase'>{task.priority}</p>
+                </div>) : null}
                 <div className="flex justify-between gap-3">
                     <div className="flex gap-1">
                         <p className="">Due to</p>
@@ -90,7 +94,7 @@ const TaskCard = ({ id, task, title, container }) => {
                     </div>
                     <div className="flex items-center gap-3">
                         <PencilIcon className='w-4 h-4 outline-none cursor-pointer' onClick={openTaskModal} />
-                        <ArrowsPointingOutIcon className='rotate-45 w-4 h-4 outline-none' style={style} ref={setActivatorNodeRef} {...listeners} {...attributes} />
+                        {container !== 'backlog' ? <ArrowsPointingOutIcon className='rotate-45 w-4 h-4 outline-none' style={style} ref={setActivatorNodeRef} {...listeners} {...attributes} /> : null}
                     </div>
                 </div>
                 <p className="font-medium">{task.name}</p>
@@ -133,7 +137,7 @@ const TaskCard = ({ id, task, title, container }) => {
                 </div>
             </div>            
 
-            <NewTaskDialog id={container} isTaskOpen={isTaskOpen} setIsTaskOpen={setIsTaskOpen} title={title} task={task} />
+            <NewTaskDialog container={container} isTaskOpen={isTaskOpen} setIsTaskOpen={setIsTaskOpen} title={title} task={task} />
         </Fragment>
     )
 }

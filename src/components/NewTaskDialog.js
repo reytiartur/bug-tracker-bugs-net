@@ -6,11 +6,10 @@ import { UserContext } from '../context/userContext';
 import { useContext } from 'react';
 import { TasksContext } from '../context/tasksContext';
 import Button from './Button';
-import BacklogDropdown from './BacklogDropdown';
 
 const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }) => {
-    const defaultInputs = {name: '', deadline: '', description: '', tag: { tag: '', color: ''}}
-    const { tasks, setTasks, tags, setTags } = useContext(TasksContext)
+    const defaultInputs = {name: '', deadline: '', description: '', priority: 'high', tag: { tag: '', color: ''}}
+    const { setTasks, tags, setTags } = useContext(TasksContext)
     const [color, setColor] = useState('fff');
     const { currentUser } = useContext(UserContext)
     const [isInputOpen, setIsInputOpen] = useState(false)
@@ -29,20 +28,20 @@ const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }
     const closeTaskModal = () => {
         closeInputModal()
         setIsTaskOpen(false)
+        setInputs(defaultInputs)
+        setTask(props?.task)
     }
 
     const handleCreateTask = (e) => {
         e.preventDefault()
 
-        const { name, deadline, description, tag } = inputs
+        const { name, deadline, description, tag, priority } = inputs
         const id = Date.now();
         const time = new Date().toLocaleDateString()
         const author = currentUser.userName;
 
-    console.log(container)
-
         setTasks((prevTasks) => 
-            ({...prevTasks, [container]: [...prevTasks[container], {name, description, id, author, time, deadline, comments:[], tag: tag}]
+            ({...prevTasks, [container]: [...prevTasks[container], {name, description, id, author, time, deadline, priority, comments:[], tag: tag}]
         }))
 
         closeTaskModal()
@@ -60,6 +59,7 @@ const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }
     const handleChange = (e) => {
         const {id, value} = e.target
         setInputs({...inputs, [id]: value})
+        console.log(id, value)
     }
 
     useEffect(() => {
@@ -69,22 +69,17 @@ const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }
     const handleEditTask = (e) => {
         e.preventDefault()
 
-    console.log(container)
-
         setTasks((prevTasks) => {
-            const task = prevTasks[container].filter(task => task.id === task.id)[0]
-            const index = prevTasks[container].indexOf(task)
-            const { name, deadline, description, tag } = inputs
-            const newTask = {name, deadline, description, tag: tag, author: task.author, id:task.id, time: task.time}
+            const item = prevTasks[container].filter(item => item.id === task.id)[0]
+            const index = prevTasks[container].indexOf(item)
+            const { name, deadline, description, tag, priority } = inputs
+            const newTask = {name, deadline, description, tag: tag, author: task.author, id:task.id, time: task.time, priority}
             return {...prevTasks, [container]: [...prevTasks[container].slice(0, index), newTask, ...prevTasks[container].slice(index + 1)]}
         })
 
         closeTaskModal()
     }
 
-    useEffect(() => {
-        console.log(task)
-    }, [task])
 
   return (
     <Fragment>
@@ -102,11 +97,21 @@ const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }
                 <Dialog.Panel className="w-[400px] absolute transform left-1/2 -translate-x-1/2 top-1/3 bg-background rounded-lg shadow-lg ring-1 border border-black ring-black ring-opacity-5 p-3">
                     <Dialog.Title className="text-center font-medium text-lg capitalize">Adding task to "{title?.toUpperCase()}"</Dialog.Title>
                     <form onSubmit={task ? (e) => handleEditTask(e) : (e) => handleCreateTask(e)} className='flex flex-col px-3 my-2'>
-                        {title !== 'backlog' && tasks.backlog.length ? <BacklogDropdown setTask={setTask} /> : null}
                         <Input label='Task Name' type='text' id='name' autoComplete='off' value={inputs.name} onChange={(e) => handleChange(e)} required  />
 
                         <label htmlFor="description" className='text-lg pl-1 font-medium'>Task Description</label>
                         <textarea id='description' rows='3' className='mb-1 resize-none bg-background rounded-md px-2 py-1 border-2 border-grayDark' value={inputs.description} onChange={(e) => handleChange(e)} />
+                        
+                        {title === 'backlog' ? (
+                            <>
+                                <label htmlFor="priority" className='text-lg pl-1 font-medium'>Priority</label>
+                                <select id="priority" className='bg-background rounded-md px-2 py-1 border-2 border-grayDark uppercase' onChange={(e) => handleChange(e)} required>
+                                    <option key='high' className='uppercase'>high</option>
+                                    <option key='medium' className='uppercase'>medium</option>
+                                    <option key='low' className='uppercase'>low</option>
+                                </select>
+                            </>
+                        ) : null}
 
                         <Input label='Deadline' type='date' id='deadline' value={inputs.deadline} onChange={(e) => handleChange(e)} required />
 
@@ -115,13 +120,13 @@ const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }
                             <Button btnStyle='default' btnSize='minimal' type='button' onClick={openInputModal}>New Tag</Button>
                         </div>
                         
-                        <select id="tag" className='mb-6 bg-background rounded-md px-2 py-1 border-2 border-grayDark' defaultValue={tags[0]?.tag} onChange={(e) => handleChange(e)} required>
+                        <select id="tag" className='mb-6 bg-background rounded-md px-2 py-1 border-2 border-grayDark' style={{color: tags[0]?.color}} defaultValue={tags[0]?.tag} onChange={(e) => handleChange(e)} required>
                             {tags.map(value => (
                                 <option key={value.tag + value.color} style={{color: value.color}}>{value.tag}</option>
                             ))}
                         </select>
 
-                        <Button btnStyle='black' btnSize='full' type='submit'>{props?.task ? 'Save' : 'Create Task'}</Button>
+                        <Button btnStyle='black' btnSize='full' type='submit'>{props?.task ? 'Save' : 'Add Task'}</Button>
                     </form>
                 </Dialog.Panel>
             </Dialog>

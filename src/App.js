@@ -6,6 +6,7 @@ import SignIn from "./screens/SignIn";
 import SignUp from "./screens/SignUp";
 import { UserContext } from "./context/userContext";
 import Projects from "./screens/Projects";
+import Backlog from "./screens/Backlog";
 
 function App() {
   const { currentUser } = useContext(UserContext)
@@ -23,6 +24,7 @@ function App() {
             ) : (
             <Route exact path="/" element={<Application />}>
               <Route path="/projects" element={<Projects />} />
+              <Route path="/backlog" element={<Backlog />} />
             </Route>
           )}
         </Routes>
