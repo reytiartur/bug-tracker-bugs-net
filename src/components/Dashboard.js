@@ -1,18 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import TasksColumn from './TasksColumn'
 import { DndContext, DragOverlay, MouseSensor, rectIntersection, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove } from '@dnd-kit/sortable';
 import { TasksContext } from '../context/tasksContext';
 import TaskCard from './TaskCard';
+import { useNavigate } from 'react-router-dom';
+import ProjectsSelector from './ProjectsSelector';
 
 const Dashboard = () => {
-    const { tasks, setTasks } = useContext(TasksContext)
+    const { tasks, setTasks, projects } = useContext(TasksContext)
     const [activeId, setActiveId] = useState(null);
     const mouseSensor = useSensor(MouseSensor);
     const touchSensor = useSensor(TouchSensor);
     const sensors = useSensors(mouseSensor, touchSensor)
     const fullArray = Array.from(Object.values(tasks).flat())
-
+    const navigate = useNavigate()
 
     const moveBetweenContainers = (tasks, activeContainer, oldIndex, overContainer, newIndex, taskId) => {
         const task = tasks[activeContainer].filter(task => task.id === taskId)[0]
@@ -92,13 +94,20 @@ const Dashboard = () => {
 
     return (
         <div className='relative grid grid-cols-4 gap-6 2xl:gap-10 px-6 2xl:px-14 grow-0 shrink-0 basis-5/6 overflow-hidden'>
-            <DndContext sensors={sensors} collisionDetection={rectIntersection} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragCancel={handleDragCancel} onDragEnd={handleDragEnd}>
-                <TasksColumn key='to do' title='to do' id='todo' tasks={tasks.todo} />
-                <TasksColumn key='in progress' title='in progress' id='inProgress' tasks={tasks.inProgress} />
-                <TasksColumn key='in review' title='in review' id='inReview' tasks={tasks.inReview} />
-                <TasksColumn key='done' title='done' id='done' tasks={tasks.done} />
-                <DragOverlay>{activeId ? <TaskCard id={activeId} task={fullArray.filter(task => task?.id === activeId)[0]} /> : null}</DragOverlay>
-            </DndContext>
+            {projects.length && tasks.length ? (<DndContext sensors={sensors} collisionDetection={rectIntersection} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragCancel={handleDragCancel} onDragEnd={handleDragEnd}>
+                <TasksColumn key='to do' title='to do' id='todo' tasks={tasks?.todo} />
+                <TasksColumn key='in progress' title='in progress' id='inProgress' tasks={tasks?.inProgress} />
+                <TasksColumn key='in review' title='in review' id='inReview' tasks={tasks?.inReview} />
+                <TasksColumn key='done' title='done' id='done' tasks={tasks?.done} />
+                <DragOverlay>{activeId ? <TaskCard id={activeId} task={fullArray?.filter(task => task?.id === activeId)[0]} /> : null}</DragOverlay>
+            </DndContext>) : projects.length ? (
+            <div className='flex items-center col-span-full justify-center'>
+                <div className="flex gap-1">
+                    <p className="">There are no tasks in your backlog yet. Please, </p>
+                    <p className="underline underline-offset-4 font-medium hover:text-primaryDark cursor-pointer" onClick={() => navigate('/backlog')}>go to Backlog</p>
+                    <p className=""> and create your first task.</p>
+                </div>
+            </div>) : null}
         </div>
     )
 }
