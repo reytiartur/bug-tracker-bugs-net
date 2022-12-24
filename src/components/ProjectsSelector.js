@@ -1,8 +1,10 @@
 import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ClipboardDocumentListIcon, ChevronDownIcon, PlusCircleIcon } from '@heroicons/react/24/outline'
-import { Disclosure, Transition } from '@headlessui/react'
+import { Disclosure, Popover, Transition } from '@headlessui/react'
 import { TasksContext } from '../context/tasksContext'
+import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline'
+import ProjectSettingsPopover from './ProjectSettingsPopover'
 
 const ProjectsSelector = ({ setSelected, selected }) => {
   const { setTasks, projects, setProjects } = useContext(TasksContext)
@@ -53,11 +55,17 @@ const ProjectsSelector = ({ setSelected, selected }) => {
     >
       <Disclosure.Panel className="w-full text-gray-900 flex flex-col" >
         {projects?.map(project => Object.keys(project).map(key => (
-          <div className={`w-4/5 py-2 hover:font-medium cursor-pointer self-end pl-2 ${selectedProject === key ? 'bg-gray-900 text-gray-50 font-medium' : ''}`} onClick={() => handleSelect(key)} key={key}>{key}</div>
+          <div className={`w-4/5 py-2 hover:font-medium cursor-pointer self-end pl-2 flex items-center justify-between ${selectedProject === key ? 'bg-gray-900 text-gray-50 font-medium' : ''}`} onClick={() => handleSelect(key)} key={key}>
+            <p>{key}</p>
+            <Popover className='relative z-10'>
+              <Popover.Button className='flex items-center'><EllipsisHorizontalIcon className='w-8 h-6 pr-2 hover:text-zinc-400'/></Popover.Button>
+              <ProjectSettingsPopover selectedProject={selectedProject} />
+            </Popover>
+          </div>
         )))}
         <div className="flex gap-2 h-7 mt-2 w-4/5 ml-auto">
           <input type='text' className='w-4/5 bg-background rounded-md px-2 py-1 text-sm border-2 border-grayDark' placeholder='New Project' value={input} onChange={(e) => setInput(e.target.value)}></input>
-          <button className='bg-black p-1 rounded-full flex items-center justify-center hover:bg-zinc-700' onClick={() => handleNewProject()}><PlusCircleIcon className='text-primary h-5 w-5 group-hover:text-primaryDark'/></button>
+          <button className='bg-black p-1 rounded-full flex items-center justify-center hover:bg-zinc-700' onClick={() => handleNewProject()}><PlusCircleIcon className='text-primary h-5 w-5 group-hover:text-primaryDark'/></button>      
         </div>
       </Disclosure.Panel>
     </Transition>
