@@ -9,7 +9,7 @@ import ProjectSettingsPopover from './ProjectSettingsPopover'
 const ProjectsSelector = ({ setSelected, selected }) => {
   const { setTasks, projects, setProjects } = useContext(TasksContext)
   const [input, setInput] = useState('')
-  const [selectedProject, setSelectedProject] = useState('')
+  const { selectedProject, setSelectedProject } = useContext(TasksContext)
 
   const navigate = useNavigate()
 
@@ -24,7 +24,7 @@ const ProjectsSelector = ({ setSelected, selected }) => {
   }
 
   const handleNewProject = () => {
-    const newProjects = [...projects, {[input]: {backlog: []} }];
+    const newProjects = [...projects, {[input]: {backlog: [], todo: [], inProgress: [], inReview: [], done: []} }];
     setProjects(newProjects)
     setSelectedProject(input)
     tasksSetter(input, newProjects)
@@ -59,7 +59,7 @@ const ProjectsSelector = ({ setSelected, selected }) => {
             <p>{key}</p>
             <Popover className='relative z-10'>
               <Popover.Button className='flex items-center'><EllipsisHorizontalIcon className='w-8 h-6 pr-2 hover:text-zinc-400'/></Popover.Button>
-              <ProjectSettingsPopover selectedProject={selectedProject} />
+              <ProjectSettingsPopover />
             </Popover>
           </div>
         )))}

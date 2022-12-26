@@ -5,10 +5,9 @@ import { arrayMove } from '@dnd-kit/sortable';
 import { TasksContext } from '../context/tasksContext';
 import TaskCard from './TaskCard';
 import { useNavigate } from 'react-router-dom';
-import ProjectsSelector from './ProjectsSelector';
 
 const Dashboard = () => {
-    const { tasks, setTasks, projects } = useContext(TasksContext)
+    const { tasks, setTasks, projects, setProjects, selectedProject } = useContext(TasksContext)
     const [activeId, setActiveId] = useState(null);
     const mouseSensor = useSensor(MouseSensor);
     const touchSensor = useSensor(TouchSensor);
@@ -56,6 +55,16 @@ const Dashboard = () => {
                     active.id
                 );
             });
+
+            const index = projects.findIndex(obj => obj[selectedProject]);
+            setProjects(
+                projects.map((obj, i) => {
+                const [[key, project]] = Object.entries(obj)
+                const oldIndex = active.data.current.sortable.index;
+                const newIndex = over.id in project ? project[overContainer].length + 1 : over.data.current.sortable.index;
+                let newItem = moveBetweenContainers(project, activeContainer, oldIndex, overContainer, newIndex, active.id)
+                return i === index ? {[key]: {...newItem}} : obj
+            }))
         }
     }
 
@@ -73,11 +82,17 @@ const Dashboard = () => {
                 ...prevTasks,
                 [overContainer]: arrayMove(prevTasks[overContainer], oldIndex, newIndex)
             }));
-        } else {
-            const oldIndex = tasks[activeContainer].findIndex(obj => obj.id === active.id);
-            const newIndex = tasks[overContainer].length;
 
+            const index = projects.findIndex(obj => obj[selectedProject]);
+            setProjects(
+                projects.map((obj, i) => {
+                const [[key, project]] = Object.entries(obj)
+                return i === index ? {[key]: {...project, [overContainer]: arrayMove(project[overContainer], oldIndex, newIndex)}} : obj
+            }))
+        } else {            
             setTasks((prevTasks) => {
+                const oldIndex = tasks[activeContainer].findIndex(obj => obj.id === active.id);
+                const newIndex = tasks[overContainer].length;
                 return moveBetweenContainers(
                     prevTasks,
                     activeContainer,
@@ -87,6 +102,16 @@ const Dashboard = () => {
                     active.id
                 )
             })
+
+            const index = projects.findIndex(obj => obj[selectedProject]);
+            setProjects(
+                projects.map((obj, i) => {
+                const [[key, project]] = Object.entries(obj)
+                const oldIndex = project[activeContainer].findIndex(obj => obj.id === active.id);
+                const newIndex = project[overContainer].length;
+                let newItem = moveBetweenContainers(project, activeContainer, oldIndex, overContainer, newIndex, active.id)
+                return i === index ? {[key]: {...newItem}} : obj
+            }))
         }
 
         setActiveId(null);
@@ -94,13 +119,13 @@ const Dashboard = () => {
 
     return (
         <div className='relative grid grid-cols-4 gap-6 2xl:gap-10 px-6 2xl:px-14 grow-0 shrink-0 basis-5/6 overflow-hidden'>
-            {projects.length && tasks.length ? (<DndContext sensors={sensors} collisionDetection={rectIntersection} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragCancel={handleDragCancel} onDragEnd={handleDragEnd}>
+            {tasks.backlog?.length ? (<DndContext sensors={sensors} collisionDetection={rectIntersection} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragCancel={handleDragCancel} onDragEnd={handleDragEnd}>
                 <TasksColumn key='to do' title='to do' id='todo' tasks={tasks?.todo} />
                 <TasksColumn key='in progress' title='in progress' id='inProgress' tasks={tasks?.inProgress} />
                 <TasksColumn key='in review' title='in review' id='inReview' tasks={tasks?.inReview} />
                 <TasksColumn key='done' title='done' id='done' tasks={tasks?.done} />
                 <DragOverlay>{activeId ? <TaskCard id={activeId} task={fullArray?.filter(task => task?.id === activeId)[0]} /> : null}</DragOverlay>
-            </DndContext>) : projects.length ? (
+            </DndContext>) : !tasks.backlog?.length ? (
             <div className='flex items-center col-span-full justify-center'>
                 <div className="flex gap-1">
                     <p className="">There are no tasks in your backlog yet. Please, </p>

@@ -9,7 +9,7 @@ import Button from './Button';
 
 const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }) => {
     const defaultInputs = {name: '', deadline: '', description: '', priority: 'high', tag: { tag: '', color: ''}}
-    const { setTasks, tags, setTags } = useContext(TasksContext)
+    const { setTasks, tags, setTags, projects, setProjects, selectedProject } = useContext(TasksContext)
     const [color, setColor] = useState('fff');
     const { currentUser } = useContext(UserContext)
     const [isInputOpen, setIsInputOpen] = useState(false)
@@ -41,8 +41,16 @@ const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }
         const author = currentUser.userName;
 
         setTasks((prevTasks) => 
-            ({...prevTasks, [container]: [...prevTasks[container], {name, description, id, author, time, deadline, priority, comments:[], tag: tag}]
-        }))
+            ({...prevTasks, [container]: [...prevTasks[container], {name, description, id, author, time, deadline, priority, comments:[], tag: tag}]})
+        )
+
+        const index = projects.findIndex(obj => obj[selectedProject]);
+        setProjects(
+            projects.map((obj, i) => {
+                const [[key, project]] = Object.entries(obj)
+                return i === index ? {[key]:{ ...project, backlog: [...project.backlog, {name, description, id, author, time, deadline, priority, comments:[], tag: tag}]}} : obj;
+            })
+        )
 
         closeTaskModal()
     }
@@ -59,7 +67,6 @@ const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }
     const handleChange = (e) => {
         const {id, value} = e.target
         setInputs({...inputs, [id]: value})
-        console.log(id, value)
     }
 
     useEffect(() => {
@@ -76,6 +83,20 @@ const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }
             const newTask = {name, deadline, description, tag: tag, author: task.author, id:task.id, time: task.time, priority}
             return {...prevTasks, [container]: [...prevTasks[container].slice(0, index), newTask, ...prevTasks[container].slice(index + 1)]}
         })
+
+        setProjects(
+            projects.map((obj, i) => {
+                const index = projects.findIndex(obj => obj[selectedProject]);
+                if(i === index) {
+                    const [[key, project]] = Object.entries(obj)
+                    const item = project[container].find(item => item.id === task.id)
+                    const itemIndex = project[container].indexOf(item)
+                    const { name, deadline, description, tag, priority } = inputs
+                    const newTask = {name, deadline, description, tag: tag, author: task.author, id:task.id, time: task.time, priority}
+                    return {[key]:{ ...project, [container]: [...project[container].slice(0, itemIndex), newTask, ...project[container].slice(itemIndex + 1)]}}
+                } else return obj
+            })
+        )
 
         closeTaskModal()
     }

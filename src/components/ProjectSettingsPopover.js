@@ -3,8 +3,8 @@ import React, { useContext } from 'react'
 import { TasksContext } from '../context/tasksContext'
 import Button from './Button'
 
-const ProjectSettingsPopover = ({selectedProject}) => {
-  const { projects, setProjects } = useContext(TasksContext)
+const ProjectSettingsPopover = () => {
+  const { projects, setProjects, selectedProject } = useContext(TasksContext)
 
   const deleteProject = () => {
     const newProjects = projects.filter(project => Object.keys(project)[0] !== selectedProject)

@@ -5,7 +5,7 @@ import { CheckIcon } from '@heroicons/react/20/solid'
 import Button from './Button'
 
 const BacklogDropdown = ({container, isTaskOpen, setIsTaskOpen, title}) => {
-    const { tasks, setTasks } = useContext(TasksContext)
+    const { tasks, setTasks, projects, setProjects, selectedProject } = useContext(TasksContext)
     const [task, setTask] = useState(null)
 
     const handleChoose = (id) => {
@@ -14,7 +14,14 @@ const BacklogDropdown = ({container, isTaskOpen, setIsTaskOpen, title}) => {
     }
 
     const handleNewTask = () => {
-        setTasks((prevState) => ({...prevState, [container]: [...prevState[container], task]}))
+        const newTasks = {...tasks, [container]: [...tasks[container], task]}
+
+        setTasks(newTasks)
+        const index = projects.findIndex(obj => obj[selectedProject]);
+        setProjects(
+            projects.map((obj, i) => {
+            return i === index ? {[selectedProject]: newTasks} : obj
+        }))
         setTask(null)
         setIsTaskOpen(false)
     }
@@ -34,7 +41,7 @@ const BacklogDropdown = ({container, isTaskOpen, setIsTaskOpen, title}) => {
                 <Dialog.Panel className="w-[400px] h-72 flex flex-col overflow-hidden absolute transform left-1/2 -translate-x-1/2 top-1/3 bg-background rounded-lg shadow-lg ring-1 border border-black ring-black ring-opacity-5 p-3">
                     <Dialog.Title className='text-lg mb-2 font-medium text-center capitalize'>Adding task to "{title?.toUpperCase()}</Dialog.Title>
                     <div className='overflow-y-auto flex flex-col gap-1'>
-                        {tasks.backlog.map(item => (
+                        {tasks?.backlog?.map(item => (
                             <div key={item.id} onClick={() => handleChoose(item.id)} className={`px-3 py-2 cursor-pointer hover:bg-primary flex rounded-full ${item.id === task?.id && 'border-2 border-primaryDark'}`}>
                                 <p className='font-medium'>{item.name}</p>
                                 <p className='uppercase ml-auto text-xs border text-center rounded-full px-2 py-1 border-grayLight bg-grayLight'>{item.priority}</p>

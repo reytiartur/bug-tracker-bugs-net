@@ -56,12 +56,15 @@ export const TasksContext = createContext({
     setTags: () => [],
     projects: [], 
     setProjects: () => [],
+    selectedProject: '',
+    setSelectedProject: () => '',
 })
  
 export const TasksProvider = ({ children }) => {
   const [tasks, setTasks] = useState({})
   const [tags, setTags] = useState([])
   const [projects, setProjects] = useState([])
+  const [selectedProject, setSelectedProject] = useState('')
 
   useEffect(() => {
     const taskArray = JSON.parse(localStorage.getItem('tasks'));
@@ -81,7 +84,7 @@ export const TasksProvider = ({ children }) => {
     localStorage.setItem('projects', JSON.stringify(projects));
   }, [projects]);
 
-  const value = { tasks, setTasks, tags, setTags, projects, setProjects }
+  const value = { tasks, setTasks, tags, setTags, projects, setProjects, selectedProject, setSelectedProject }
 
   return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>
 }
