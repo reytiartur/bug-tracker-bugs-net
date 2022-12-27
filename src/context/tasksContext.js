@@ -68,7 +68,9 @@ export const TasksProvider = ({ children }) => {
 
   useEffect(() => {
     const taskArray = JSON.parse(localStorage.getItem('tasks'));
-    setTasks(taskArray);
+    if(taskArray.length){
+      setTasks(taskArray);
+    }
   }, []);
 
   useEffect(() => {
@@ -77,12 +79,35 @@ export const TasksProvider = ({ children }) => {
 
   useEffect(() => {
     const projectsArray = JSON.parse(localStorage.getItem('projects'));
-    setProjects(projectsArray);
+    if(projectsArray.length) {
+      setProjects(projectsArray);
+    }
   }, []);
 
   useEffect(() => {
     localStorage.setItem('projects', JSON.stringify(projects));
   }, [projects]);
+
+  useEffect(() => {
+    const tagsArray = JSON.parse(localStorage.getItem('tags'));
+    if(tagsArray.length) {
+      setTags(tagsArray);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('tags', JSON.stringify(tags));
+  }, [tags]);
+
+  useEffect(() => {
+    const selected = JSON.parse(localStorage.getItem('selected'));
+    if(!selected) return;
+    setSelectedProject(selected);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('selected', JSON.stringify(selectedProject));
+  }, [selectedProject]);
 
   const value = { tasks, setTasks, tags, setTags, projects, setProjects, selectedProject, setSelectedProject }
 

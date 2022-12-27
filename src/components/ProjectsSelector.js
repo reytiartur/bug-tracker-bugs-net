@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ClipboardDocumentListIcon, ChevronDownIcon, PlusCircleIcon } from '@heroicons/react/24/outline'
 import { Disclosure, Popover, Transition } from '@headlessui/react'
@@ -37,6 +37,12 @@ const ProjectsSelector = ({ setSelected, selected }) => {
     const taskArray = Object.values(obj)[0] ?? []
     setTasks(taskArray)
   }
+
+  useEffect(() => {
+    if(selectedProject) {
+      tasksSetter(selectedProject, projects)
+    }  
+  }, [])
 
   return (
   <Disclosure>

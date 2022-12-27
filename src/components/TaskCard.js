@@ -9,15 +9,16 @@ import Button from './Button';
 import { TasksContext } from '../context/tasksContext';
 import { UserContext } from '../context/userContext';
 
-const TaskCard = ({ id, task, title, container }) => {
+const TaskCard = ({ id, title, container, ...props }) => {
     const { attributes, listeners, setActivatorNodeRef, isDragging } = useSortable({id});
     const [deadline, setDeadline] = useState()
     const [color, setColor] = useState()
     const [time, setTime] = useState()
     const [isTaskOpen, setIsTaskOpen] = useState(false)
     const [comment, setComment] = useState('')
-    const { setTasks } = useContext(TasksContext)
+    const { tasks, setTasks, projects } = useContext(TasksContext)
     const { currentUser } = useContext(UserContext)
+    const [task, setTask] = useState(props?.task)
     
     const openTaskModal = () => {
         setIsTaskOpen(true)
@@ -79,6 +80,9 @@ const TaskCard = ({ id, task, title, container }) => {
         handleTimeAgo()
     }, [])
 
+    useEffect(() => {
+        setTask(tasks?.backlog?.find(item => item.id === task?.id))
+    }, [projects])
 
     return (
         <Fragment>
@@ -93,7 +97,7 @@ const TaskCard = ({ id, task, title, container }) => {
                         <p className={`font-medium ${color}`}>{deadline}</p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <PencilIcon className='w-4 h-4 outline-none cursor-pointer' onClick={openTaskModal} />
+                        {container === 'backlog' ? <PencilIcon className='w-4 h-4 outline-none cursor-pointer' onClick={openTaskModal} /> : null}
                         {container !== 'backlog' ? <ArrowsPointingOutIcon className='rotate-45 w-4 h-4 outline-none' style={style} ref={setActivatorNodeRef} {...listeners} {...attributes} /> : null}
                     </div>
                 </div>

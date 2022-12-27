@@ -9,12 +9,13 @@ const BacklogDropdown = ({container, isTaskOpen, setIsTaskOpen, title}) => {
     const [task, setTask] = useState(null)
 
     const handleChoose = (id) => {
-        const selected = tasks.backlog.filter(item => item.id === id)[0]
+        const selected = tasks.backlog.find(item => item.id === id)
         setTask(selected)
     }
 
     const handleNewTask = () => {
-        const newTasks = {...tasks, [container]: [...tasks[container], task]}
+        const newTask = tasks.backlog.find(item => item.id === task.id)
+        const newTasks = {...tasks, [container]: [...tasks[container], newTask]}
 
         setTasks(newTasks)
         const index = projects.findIndex(obj => obj[selectedProject]);

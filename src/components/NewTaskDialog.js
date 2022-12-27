@@ -37,7 +37,7 @@ const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }
 
         const { name, deadline, description, tag, priority } = inputs
         const id = Date.now();
-        const time = new Date().toLocaleDateString()
+        const time = new Date()
         const author = currentUser.userName;
 
         setTasks((prevTasks) => 
@@ -89,11 +89,11 @@ const NewTaskDialog = ({ container, isTaskOpen, setIsTaskOpen, title, ...props }
                 const index = projects.findIndex(obj => obj[selectedProject]);
                 if(i === index) {
                     const [[key, project]] = Object.entries(obj)
-                    const item = project[container].find(item => item.id === task.id)
-                    const itemIndex = project[container].indexOf(item)
+                    const item = project.backlog.find(item => item.id === task.id)
+                    const itemIndex = project.backlog.indexOf(item)
                     const { name, deadline, description, tag, priority } = inputs
                     const newTask = {name, deadline, description, tag: tag, author: task.author, id:task.id, time: task.time, priority}
-                    return {[key]:{ ...project, [container]: [...project[container].slice(0, itemIndex), newTask, ...project[container].slice(itemIndex + 1)]}}
+                    return {[key]:{ ...project, backlog: [...project.backlog.slice(0, itemIndex), newTask, ...project.backlog.slice(itemIndex + 1)]}}
                 } else return obj
             })
         )
