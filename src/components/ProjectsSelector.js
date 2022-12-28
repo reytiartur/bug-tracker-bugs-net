@@ -21,6 +21,7 @@ const ProjectsSelector = ({ setSelected, selected }) => {
   const handleSelect = (project) => {
     setSelectedProject(project)
     tasksSetter(project, projects)
+    handleClick()
   }
 
   const handleNewProject = () => {

@@ -16,7 +16,7 @@ const TaskCard = ({ id, title, container, ...props }) => {
     const [time, setTime] = useState()
     const [isTaskOpen, setIsTaskOpen] = useState(false)
     const [comment, setComment] = useState('')
-    const { tasks, setTasks, projects } = useContext(TasksContext)
+    const { tasks, setTasks, projects, setProjects, selectedProject } = useContext(TasksContext)
     const { currentUser } = useContext(UserContext)
     const [task, setTask] = useState(props?.task)
     
@@ -35,6 +35,19 @@ const TaskCard = ({ id, title, container, ...props }) => {
 
             return {...prevTasks, [container]:[...prevTasks[container].slice(0, index), newTask, ...prevTasks[container].slice(index + 1)]}
         })
+
+        setProjects(projects.map((obj, i) => {
+            const index = projects.findIndex(obj => obj[selectedProject]);
+            if(i === index) {
+                const [[key, project]] = Object.entries(obj)
+                const currentTask = project.backlog.filter(item => item.id === task.id)[0]
+                const index = project.backlog.indexOf(currentTask)
+                const newTask = {...task, comments:[...task.comments, { author:currentUser.userName, text:comment, img:currentUser.imgUrl}]}
+                return {[key]:{...project, backlog:[...project.backlog.slice(0, index), newTask, ...project.backlog.slice(index + 1)]}}
+            } else {
+                return obj;
+            }
+        }))
 
         setComment('')
     }
