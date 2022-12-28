@@ -8,7 +8,7 @@ import { ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline'
 import ProjectsSelector from '../components/ProjectsSelector'
 
 const Sidebar = () => {
-    const [selected, setSelected] = useState('projects')
+    const [selected, setSelected] = useState('')
 
   return (
     <div className='z-10 col-start-1 col-end-2 row-span-full flex flex-col px-8 py-6 border-r border-grayLight'>

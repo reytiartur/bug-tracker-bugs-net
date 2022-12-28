@@ -5,8 +5,8 @@ const ProfileInfo = () => {
     const { currentUser } = useContext(UserContext)
     const { userName, photoURL } = currentUser;
 
-    const name = userName.split(' ');
-    const initials = name.map(word => word.charAt(0)).join('')
+    const name = userName?.split(' ');
+    const initials = name?.map(word => word.charAt(0)).join('')
 
   return (
     <div className='py-6 pl-6 flex flex-col justify-center items-center'>

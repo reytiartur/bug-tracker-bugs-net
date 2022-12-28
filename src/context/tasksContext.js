@@ -68,7 +68,7 @@ export const TasksProvider = ({ children }) => {
 
   useEffect(() => {
     const taskArray = JSON.parse(localStorage.getItem('tasks'));
-    if(taskArray.length){
+    if(taskArray?.length){
       setTasks(taskArray);
     }
   }, []);
@@ -79,7 +79,7 @@ export const TasksProvider = ({ children }) => {
 
   useEffect(() => {
     const projectsArray = JSON.parse(localStorage.getItem('projects'));
-    if(projectsArray.length) {
+    if(projectsArray?.length) {
       setProjects(projectsArray);
     }
   }, []);
@@ -90,7 +90,7 @@ export const TasksProvider = ({ children }) => {
 
   useEffect(() => {
     const tagsArray = JSON.parse(localStorage.getItem('tags'));
-    if(tagsArray.length) {
+    if(tagsArray?.length) {
       setTags(tagsArray);
     }
   }, []);

@@ -15,11 +15,11 @@ const ProjectsSelector = ({ setSelected, selected }) => {
 
   const handleClick = () => {        
     setSelected('projects')
+    navigate(`/projects`)
   }
 
   const handleSelect = (project) => {
     setSelectedProject(project)
-    navigate(`/projects`)
     tasksSetter(project, projects)
   }
 
